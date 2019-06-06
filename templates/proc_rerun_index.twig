@@ -1,0 +1,60 @@
+{% set appFunction = 'proc_rerun' %}
+{% extends "layout.twig" %}
+{% block content %}
+    <div class="alert alert-info hide-info" id="info-message">
+        <h4>
+            <span class="glyphicon glyphicon-info-sign"></span>
+            <span id="job-status"></span>
+        </h4>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-responsive">
+                <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>Job Name</th>
+                    <th>Queued/Start</th>
+                    <th>Finish</th>
+                    <th>Status</th>
+                    <th>Submitted By</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for record in records %}
+                <tr id="run-job-detail-{{ record.id }}">
+                    <td>
+                        <button name="submit-job" data-submit-job="{{ record.id }}" class="btn btn-xs btn-success
+                        {% if record.status == 'running' or record.status == 'queued' %} hide-run{% endif %}">
+                            Run <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                        <button name="refresh-job" data-refresh-job="{{ record.id }}"class="btn btn-xs btn-primary
+                        {% if record.status != 'running' and record.status != 'queued'%} hide-refresh{% endif %}">
+                            Refresh <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
+                    </td>
+                    <td>{{ record.job_name }}</td>
+                    <td>{% if record.run_time %} {{ record.run_time|date('m-d-Y h:ia') }} {% endif %}</td>
+                    <td>{% if record.finish_time and record.status == 'completed' %} {{  record.finish_time|date('m-d-Y h:ia') }}{% endif %}</td>
+                    <td id="run-job-detail-status-{{ record.id }}">
+                        <span class="label label-primary{% if record.status == 'running' %} status-indicator-show{% else %} status-indicator-hide{% endif %}">Running</span>
+                        <span class="label label-warning{% if record.status == 'queued' %} status-indicator-show{% else %} status-indicator-hide{% endif %}">Queued</span>
+                        <span class="label label-success{% if record.status == 'completed' %} status-indicator-show{% else %} status-indicator-hide{% endif %}">Completed</span>
+                        <span class="error-tooltip label label-danger{% if record.status == 'error' %} status-indicator-show{% else %} status-indicator-hide{% endif %}"
+                              data-toggle="error-tooltip"
+                              data-placement="bottom"
+                              title="{% if record.status == 'error' %}{{ record.error_message }}{% endif %}">Problems
+                        </span>
+                    </td>
+                    <td>{{ record.user }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div id="push"></div>
+        </div>
+    </div>
+    <script type ="text/javascript">
+        ProcReRun.initProcReRun();
+    </script>
+{% endblock %}

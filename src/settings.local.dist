@@ -1,0 +1,61 @@
+<?php
+
+$db_config = [
+    'dsn' => 'mysql:host=localhost;dbname=backoffice;charset=utf8'
+];
+
+switch (getenv('APP_ENV')) {
+    case 'dev':
+    case 'stage':
+    case 'cli-dev':
+
+        $hosts = [ 'backoffice.local', 'db.new-vincodo.com', 'db-vincodo.oliverandassociatesconsulting.com'];
+        break;
+
+    default:
+        $hosts = [];
+}
+
+return [
+    'settings' => [
+        'displayErrorDetails' => true,
+
+        // Renderer settings
+        'renderer' => [
+            'template_path' => __DIR__ . '/../templates/',
+        ],
+
+        // Monolog settings
+        'logger' => [
+            'name' => 'slim-app',
+            'path' => '/var/log/vincodo/app.log',
+        ],
+        'fb_snapshot_logger' => [
+            'name' => 'fb_snapshot',
+            'path' => '/var/log/vincodo/fb_snapshot.log',
+        ],
+
+        'file_mover_logger' => [
+            'name' => 'file_mover',
+            'path' => '/var/log/vincodo/file_mover.log',
+        ],
+
+        // environment
+        'authorized_hosts' => [
+            "hosts" => $hosts
+        ],
+
+        // db config
+        'db' => [
+            'dsn' => $db_config['dsn'],
+            'username' => getenv('DB_USER'),
+            'password' => getenv('DB_PASSWD')
+        ],
+        'directoryRoots' => [
+            'fromRoot' => '/home/',
+            'toRoot' => '/home/vincodo/Dropbox/'
+        ],
+        'queue_host' => '127.0.0.1:11300',
+        'queue_name' => 'snapshot_queue'
+    ],
+];

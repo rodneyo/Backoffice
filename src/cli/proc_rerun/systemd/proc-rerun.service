@@ -1,0 +1,21 @@
+[Unit]
+Description=Vincodo Procedure Rerun
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+
+[Service]
+User=vincodo
+Type=simple
+EnvironmentFile=-/etc/vincodo/daemon_conf/proc_rerun_env.local
+ExecStart=/usr/bin/env php -f ${PROC_RERUNNER_DAEMON_PATH}/proc_rerun_daemon.php ${PRR_SETTINGS_PATH}
+TimeoutSec=30
+Restart=always
+RestartSec=1
+StartLimitInterval=350
+StartLimitBurst=10
+StandardOutput=file:/var/log/vincodo/proc-rerun.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,55 @@
+image: registry.gitlab.com/vincodo/backoffice/phpci-72:ubuntu18_04
+
+stages:
+  - build
+  - deploy
+
+cache:
+    paths:
+      - vendor/
+
+before_script:
+      - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+      - eval $(ssh-agent -s)
+      - ssh-add <(echo "$SSH_PRIVATE_KEY")
+      - mkdir -p ~/.ssh
+      - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+      - rm -rf puphpet; rm -f Vagrantfile; rm -f deploy.php; rm -f README.md; rm -rf sql
+      - mv src/settings.local.dist src/settings.local.php
+
+## Run our tests
+## If Xdebug was installed you can generate a coverage report and see code coverage metrics.
+build_job:
+    tags:
+      - backoffice
+    stage: build
+
+    script:
+      - composer install
+      - phpunit --configuration=phpunit.xml --coverage-text --colors=never
+
+deploy to stage:
+    environment: Stage
+    tags:
+      - backoffice
+    stage: deploy
+
+    script:
+      - rm -f composer.*; rm -f phpunit.xml
+      - ssh -t $DEPLOY_USER@$STAGE_SERVER "cd $DEPLOY_ROOT; rm -rf ./*"
+      - cd $CI_PROJECT_DIR
+      - scp -r ./* $DEPLOY_USER@$STAGE_SERVER:$DEPLOY_ROOT
+
+deploy to production:
+    environment: Production
+    stage: deploy
+    tags:
+      - backoffice
+    only:
+      - /^release_v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/
+    script:
+      - rm -f composer.*; rm -f phpunit.xml
+      - ssh -t $DEPLOY_USER@$PROD_SERVER "cd $DEPLOY_ROOT; rm -rf ./*"
+      - cd $CI_PROJECT_DIR
+      - scp -r ./* $DEPLOY_USER@$PROD_SERVER:$DEPLOY_ROOT
+

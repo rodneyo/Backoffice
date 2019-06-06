@@ -1,0 +1,13 @@
+/vendor/
+/logs/*
+!/logs/README.md
+puphpet/config-custom.yaml
+.idea
+.vagrant/*
+logs/*
+*.local.php
+*.local.conf
+*.local
+*.csv
+*.xlsx
+*.out

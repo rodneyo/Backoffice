@@ -1,0 +1,12 @@
+[program:queue_monitor]
+command=/usr/bin/php /var/www/vincodo/backoffice/--DEPLOYER_CURRENT--/src/cli/supervisord/QueueMonitor/queue_monitor.php
+directory=/var/www/vincodo/backoffice/--DEPLOYER_CURRENT--/src/cli/supervisord/QueueMonitor
+autostart=true
+autorestart=true
+startretries=3
+exitcodes=0
+stderr_logfile=/var/log/vincodo/queue_monitor.error.log
+stdout_logfile=/var/log/vincodo/queue_monitor.out.log
+user=--SYSTEM_USER--
+environment=DB_USER="--DB_USER--",DB_PASSWD="--DB_PASSWD--"
+

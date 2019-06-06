@@ -1,0 +1,66 @@
+{% set appFunction = 'fb_snapshot' %}
+{% extends "layout.twig" %}
+
+{% block content %}
+    <h1>Vincodo Facebook Campaign Snap Shot</h1>
+    <br/>
+    <div class="alert alert-danger app-error-alert" id="file-mover-error-alert">
+        <h4>
+            <span class="glyphicon glyphicon-alert"></span>
+            <span class="app-error-text">Some Error Here</span>
+        </h4>
+    </div>
+
+
+    <div class="row">
+        <div class="container-fluid">
+            <form class="form-line" name="fb_snapshot_form" action="/fb-snapshot/run" method="post">
+                <div class="form-group">
+                    <div class="col-md-2 col-md-push-2">
+                        <select class="form-control" name="fb_account_id">
+                            {% for account in accounts %}
+                                <option value="{{ account.id }}">{{ account.fb_account_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-md-push-2">
+                        <button class="btn btn-success" id="snapshot-run-btn">
+                            <span class="glyphicon glyphicon-chevron-right"></span> Run
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br/>
+
+    <div class="row">
+        <div class="container-fluid">
+            <div class="col-md-8 col-md-push-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Snapshot console
+                    </div>
+                    <div class="console panel-body">
+                        <div id="snapshot-execution-progress-bar" style="display: none">
+                            <!-- <div class="col-xs-2">Executing...</div> -->
+                            <div>
+                                <span class="progress-bar-text">Executing...Stand by</span>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="snapshot-status">
+                            <span class="console-output-status">Select a client from the list and click "Run" to start a snapshot</span><br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script text="text/javascript">
+        $(document).ready(function () {
+            SnapShotPoller.Init();
+        });
+    </script>
+{% endblock %}

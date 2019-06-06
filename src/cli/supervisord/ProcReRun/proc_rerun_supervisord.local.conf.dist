@@ -1,0 +1,12 @@
+[program:proc_rerun]
+command=/usr/bin/php /var/www/vincodo/backoffice/current/src/cli/supervisord/ProcReRun/proc_rerun_daemon.php
+directory=/var/www/vincodo/backoffice/current/src/cli/proc_rerun
+autostart=true
+autorestart=true
+startretries=0
+startsecs=0
+exitcodes=0
+stderr_logfile=/var/log/vincodo/proc_rerun_supervisor.error.log
+stdout_logfile=/var/log/vincodo/proc_rerun_supervisor.out.log
+user=--SYSTEM_USER--
+environment=DATABASE="--DATABASE--",DB_USER="--DB_USER--",DB_PASSWD="--DB_PASSWD--",JOBS_TBL="proc_rerun_jobs",LOG_TBL="proc_rerun_log",RUN_LOG_TBL="latest_job_run_log"

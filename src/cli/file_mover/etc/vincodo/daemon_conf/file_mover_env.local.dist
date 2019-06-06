@@ -1,0 +1,13 @@
+##############################
+# Set the path to the file
+# mover php daemon per
+# installation
+# Installed in: /etc/
+##############################
+FILE_MOVER_DAEMON_PATH="--PATH-TO-FILEMOVER-DAEMON--"
+
+# Settings Path
+FM_SETTINGS_PATH='--FM-SETTINGS-PATH--'
+
+export FM_SETTINGS_PATH
+

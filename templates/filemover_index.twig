@@ -1,0 +1,185 @@
+{% set appFunction = 'file_mover' %}
+{% extends "layout.twig" %}
+
+{% block content %}
+    <h1>Vincodo File Mover</h1>
+<br/>
+    <div class="alert alert-danger app-error-alert" id="file-mover-error-alert">
+        <h4>
+        <span class="glyphicon glyphicon-alert"></span>
+        <span class="app-error-text">Some Error Here</span>
+        </h4>
+    </div>
+<div class="row">
+    <div class="container-fluid">
+        <button id='add-file-mover' type="button" class="btn btn-primary">Add</button>
+        <button id='run-all' type="button" class="btn btn-primary">Run All</button>
+        <span id='run-all-info-msg' class="run-all-info-msg alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> All jobs have been set to run immediately</span>
+        <h3>{{ action }} {{ id }}</h3>
+        {%  if records|length > 0 %}
+            <table class="table table-hover" id="file-mover-config-table">
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>From Directory<br/><small>{{ directoryRoots.fromRoot }}</small></th>
+                        <th>From Match</th>
+                        <th><span class="glyphicon glyphicon-arrow-right"></span></th>
+                        <th>To Directory<br/><small>{{ directoryRoots.toRoot }}</small></th>
+                        <th>To File Name</th>
+                        <th>Run Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for record in records %}
+                    <tr data-file-mover-config-row="{{ record.id }}">
+                        <td>
+                            <div class="row file-mover-actions">
+                                <div class="col-sm-1">
+                                    <span data-file-mover-id="{{ record.id }}" class="glyphicon glyphicon-edit file-mover-actions-icon-size file-mover-edit-ico cursor-pointer"></span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <a role="button"
+                                        class="a-unstyled"
+                                        id="info-btn-{{ loop.index }}"
+                                        tabindex="{{ loop.index }}"
+                                        data-trigger="focus"
+                                        data-container="body"
+                                        data-toggle="popover" data-placement="bottom"
+                                        data-content="<strong>created:</strong>
+                                        {{ record.create_date }}<br /><strong>modified</strong> {{ record.modified_date }}<br />
+                                        <strong>last user:</strong> {{ record.user }}">
+                                        <span class="glyphicon glyphicon-info-sign file-mover-actions-icon-size"></span>
+                                    </a>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span data-file-mover-id="{{ record.id }}" class="glyphicon glyphicon-remove-sign file-mover-actions-icon-size file-mover-delete-ico cursor-pointer"></span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span id="single-job-run-{{ record.id }}" data-file-mover-id="{{ record.id }}" class="glyphicon glyphicon-play file-mover-actions-icon-size file-mover-play-ico cursor-pointer"></span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input class="file-mover-status" data-file-mover-id="{{ record.id }}"
+                                           type="checkbox" {% if record.status == 'on' %}checked{% endif %} data-on="enabled" data-off="disabled"
+                                           data-onstyle="success" data-toggle="toggle" data-size="mini">
+                                </div>
+                                <span id=run-job-msg-id-{{ record.id }} class="run-single-job label label-info"> Job set to run immediately</span>
+                            </div>
+                        </td>
+                        <td>
+                           {{ record.from_directory }}
+                        </td>
+                        <td>
+                           {{ record.file_string_match }}
+                        </td>
+                        <td><span class="glyphicon glyphicon-arrow-right"></span></td>
+                        <td>
+                            {{ record.to_directory }}
+                        </td>
+                        <td>
+                            {{ record.to_filename }}
+                        </td>
+                        <td>
+                           {{ record.run_time|runTimeFormat }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div id="push"></div>
+        {% else %}
+            <div class="alert alert-info">
+                <span class="glyphicon glyphicon-info-sign"></span>
+                No file mover configurations found.  Add some by clicking the "Add" button
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Add/Edit Modal -->
+<div>
+    <form name="add-edit-file-mover" action="/file-mover/save" method="post">
+    <div class="modal fade"  id="add-edit-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Create a New File Mover Configuration</h4>
+                </div>
+                <div class="modal-body">
+                        <div class="alert alert-success save-success">
+                            <h4>
+                                <span class="glyphicon glyphicon-ok-sign"></span>
+                                New File Mover Coniguration Saved Successfully
+                            </h4>
+                        </div>
+                    <div class="alert alert-danger save-error">
+                        <h4>
+                            <span class="glyphicon glyphicon-alert"></span>
+                            An error occurred while trying to save this file mover configuration
+                        </h4>
+                    </div>
+                        <div><h3>Move From: <small>{{ directoryRoots.fromRoot }}</small></h3></div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="from_directory" placeholder="From Directory ({{ directoryRoots.fromRoot }})" value="{{ record.from_directory }}">
+                                <div class="alert alert-danger validation-error" id="from-directory-error"><span class="text-danger">Error Occurred</span></div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="file_string_match" placeholder="File Match (RTG_DBM*.csv)" value="{{ record.file_string_match }}">
+                                <div class="alert alert-danger validation-error" id="file-string-match-error"><span class="text-danger">Error Occurred</span></div>
+                            </div>
+                        </div>
+                        <div><h3>To: <small>{{ directoryRoots.toRoot }}</small></h3></div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="to_directory" placeholder="To Directory ({{ directoryRoots.toRoot }})" value="{{ record.to_directory }}">
+                                <div class="alert alert-danger validation-error" id="to-directory-error"><span class="text-danger">Error Occurred</span></div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="to_filename" placeholder="File Name" value="{{ record.to_filename }}">
+                                <div class="alert alert-danger validation-error" id="to-filename-error"><span class="text-danger">Error Occurred</span></div>
+                            </div>
+                        </div>
+                        <div><h3>Run Every Day At:</h3></div>
+                        <div class="row">
+                            <div class='col-sm-2'>
+                                <div class="form-group">
+                                    <div class="input-group clockpicker">
+                                        <input type="text" class="form-control" name="run_time" value="{{ "now"|date('H:i', timezone="America/New_York") }}">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-time"></span>
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="save-file-mover-btn" type="submit" class="btn btn-success">Save</button>
+                    <input type="hidden" name="file_mover_id" value="{{ record.id }}">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    </form>
+    <!-- Delete Confirm Modal -->
+    <div class="modal fade delete-confirm-modal" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteConfigConfirm">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header"><h4>Delete Confirmation</h4></div>
+                <div class="modal-body">
+                    <h4>You are about to delete a file mover config.<br /></h4>
+                    <h4 class="text-center">Are you sure?</h4>
+                </div>
+                <form method="post" action="/file-mover/delete" name="delete-config-form">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="delete-file-mover-confirm-btn" type="submit" class="btn btn-danger">Confirm Delete</button>
+                        <input type="hidden" name="file_mover_id" value="{{ record.id }}">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

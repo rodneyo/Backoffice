@@ -1,0 +1,13 @@
+##############################
+# Set the path to the proc
+# re-runner php daemon per
+# installation
+# Installed in: /etc/vincodo/daemon_conf
+##############################
+PROC_RERUNNER_DAEMON_PATH="--PATH_TO_PROC_RERUN_DAEMON--"
+
+# Settings Path
+PRR_SETTINGS_PATH='--PRR_SETTINGS_PATH--'
+
+export PRR_SETTINGS_PATH
+

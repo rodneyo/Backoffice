@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vincodo - Back Office</title>
+    {% block head %}
+    <link rel="stylesheet" href="/assets/css/bootstrap-toggle.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap-clockpicker.min.css" />
+    <link rel="stylesheet" href="/assets/css/sticky-footer.css" />
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/vincodo_styles.css" />
+    <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/assets/js/bootstrap-toggle.min.js"></script>
+    <script type="text/javascript" src="/assets/js/common.js"></script>
+    <script type="text/javascript" src="/assets/js/file-mover.js"></script>
+    <script type="text/javascript" src="/assets/js/procedure-rerun.js"></script>
+    <script type="text/javascript" src="/assets/js/fb_snapshot_poller.js"></script>
+    <script type="text/javascript" src="/assets/js/bootstrap-clockpicker.min.js"></script>
+    <script type="text/javascript" src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+</head>
+<body>
+<!--
+<div class="main-head">
+    <div class="container-fluid">
+        <div class="header layout_mast_head">
+            <img src="/assets/img/logo_vincodo3.png">Back Office
+        </div>
+    </div>
+</div>
+-->
+
+<div>
+<div class="navbar navbar-fixed-top navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <h4>
+            <a class="navbar-brand" href="/">
+                <img alt="Brand" src="/assets/img/logo_vincodo3.png">
+                <a class="navbar-brand navbar-brand-text" href="/"><small>Back Office</small></a>
+            </a>
+        </h4>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        {% if appFunction!= 'menu' %}
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li {%  if appFunction == 'file_mover' %} class="active"{% endif %}"><a href="/file-mover">File Mover <span class="sr-only">(current)</span></a></li>
+                <li {%  if appFunction == 'proc_rerun' %} class="active"{% endif %}><a href="/proc-rerun">Procedure Re-Run</a></li>
+                <li {%  if appFunction == 'fb_snapshot' %} class="active"{% endif %}><a href="/fb-snapshot">FB Snap Shot</a></li>
+            </ul>
+        </div>
+        {% endif %}
+    </div><!-- /.container-fluid -->
+</div>
+    </div>
+
+<div class="container-fluid">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <p class="footer-margin text-muted">
+                {% block footer %}
+                &copy; Copyright {{ "now"|date('m-d-Y') }} <a href="http://www.vincodo.com">Vincodo LLC</a>.
+                {% endblock %}
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+<script type ="text/javascript">
+    $('.clockpicker').clockpicker({
+        autoclose: true,
+        'default': 'now'
+    });
+
+    $(document).ready(function() {
+        FileMover.initFileMover();
+        $('[data-toggle="popover"]').popover({
+            "title": 'Details',
+            "html": true,
+            "template":
+            '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+        });
+    });
+
+</script>
+</body>
+</html>
