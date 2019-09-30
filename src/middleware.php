@@ -8,7 +8,7 @@ $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     'secure' => true,
     'relaxed' => $hosts,
     'users' => [
-        'admin' => getenv('ADMIN_PASSWD'),
-        'tdaly' => getenv('USER_PASSWD')
+        'user1' => '',
+        'user2' => ''
     ]
 ]));
